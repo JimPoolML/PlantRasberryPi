@@ -1,0 +1,321 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:tools="http://schemas.android.com/tools">
+
+    <!-- Base application theme. -->
+    <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
+        <!-- Customize your theme here. -->
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/colorAccent</item>
+        <item name="android:windowFullscreen">true</item>
+        <item name="android:fitsSystemWindows">true</item>
+    </style>
+
+    <style name="AppTheme.NoActionBar">
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+    </style>
+
+    <style name="AppTheme.GradientStatusBar" parent="AppTheme">
+        <item name="android:windowContentOverlay">@null</item>
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+        <item name="android:windowDrawsSystemBarBackgrounds" tools:targetApi="lollipop">true</item>
+        <item name="android:statusBarColor" tools:targetApi="lollipop">@android:color/transparent
+        </item>
+        <!--Overridden section-->
+        <item name="listPreferredItemHeightSmall">?actionBarSize</item>
+    </style>
+
+    <style name="AppThemeCustom" parent="ThemeOverlay.AppCompat">
+        <!-- Customize your theme here. -->
+        <item name="colorPrimary">@color/colorWhite</item>
+        <item name="colorPrimaryDark">@color/colorWhite</item>
+        <item name="colorAccent">@color/colorBlack</item>
+        <item name="android:layout_height">56dp</item>
+    </style>
+
+    <style name="TextView">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+    </style>
+
+    <style name="Text.Regular" parent="TextView">  <!--regular-->
+        <item name="android:fontFamily">@font/brown_regular</item>
+    </style>
+
+    <style name="Text.Light" parent="TextView">  <!--regular-->
+        <item name="android:fontFamily">@font/brown_light</item>
+    </style>
+
+    <style name="TextRegular.White18" parent="Text.Regular">
+        <item name="android:textSize">@dimen/text_dim_18</item>
+        <item name="android:textColor">@color/colorWhite</item>
+    </style>
+
+    <style name="TextRegular.White28" parent="TextRegular.White18">
+        <item name="android:textSize">@dimen/text_dim_28</item>
+    </style>
+
+    <style name="TextRegular.White20" parent="TextRegular.White18">
+        <item name="android:textSize">@dimen/text_dim_20</item>
+    </style>
+
+    <style name="TextRegular.White16" parent="Text.Regular">
+        <item name="android:textSize">@dimen/text_dim_16</item>
+        <item name="android:textColor">@color/colorWhite</item>
+    </style>
+
+    <style name="TextRegular.White14" parent="Text.Regular">
+        <item name="android:textSize">@dimen/text_dim_14</item>
+        <item name="android:textColor">@color/colorWhite</item>
+    </style>
+
+    <style name="TextRegular.Yellow18" parent="Text.Regular">
+        <item name="android:textSize">@dimen/text_dim_18</item>
+        <item name="android:textColor">@color/yelow_frs</item>
+    </style>
+
+    <style name="TextRegular.CyanBlue12" parent="Text.Regular">
+        <item name="android:textSize">@dimen/text_dim_12</item>
+        <item name="android:textColor">@color/cyanBlue</item>
+    </style>
+
+    <style name="TextRegular.CyanBlue18" parent="TextRegular.CyanBlue12">
+        <item name="android:textSize">@dimen/text_dim_18</item>
+    </style>
+
+    <style name="TextRegular.CyanBlue16" parent="TextRegular.CyanBlue12">
+        <item name="android:textSize">@dimen/text_dim_16</item>
+    </style>
+
+    <style name="TextRegular.Red20" parent="Text.Regular">
+        <item name="android:textSize">@dimen/text_dim_20</item>
+        <item name="android:textColor">@color/red_abis</item>
+    </style>
+
+    <style name="Textlight.BlackText16" parent="Text.Light">
+        <item name="android:textSize">@dimen/text_dim_16</item>
+        <item name="android:textColor">@color/colorBlackTextLight</item>
+    </style>
+
+    <style name="Textlight.BlackText14" parent="Textlight.BlackText16">
+        <item name="android:textSize">@dimen/text_dim_14</item>
+    </style>
+
+    <style name="Textlight.BlacklightText14" parent="Text.Light">
+        <item name="android:textSize">@dimen/text_dim_14</item>
+        <item name="android:textColor">@color/colorBlackTextLight80</item>
+    </style>
+
+    <style name="Textlight.BlueCorrobation12" parent="Text.Light">
+        <item name="android:textSize">@dimen/text_dim_12</item>
+        <item name="android:textColor">@color/blue_corrobation</item>
+    </style>
+
+    <style name="TextLigth.Blue12" parent="Text.Light">
+        <item name="android:textSize">@dimen/text_dim_12</item>
+        <item name="android:textColor">@color/cyanBlue</item>
+    </style>
+
+    <style name="TextLigth.Blue14" parent="TextLigth.Blue12">
+        <item name="android:textSize">@dimen/text_dim_14</item>
+    </style>
+
+    <style name="TextLigth.Gray12" parent="Text.Light">
+        <item name="android:textSize">@dimen/text_dim_12</item>
+        <item name="android:textColor">@color/gray</item>
+    </style>
+
+    <style name="TextRegular.Black28" parent="Text.Regular">
+        <item name="android:textSize">@dimen/text_dim_28</item>
+        <item name="android:textColor">@color/colorBlack</item>
+    </style>
+
+    <style name="TextRegular.Black20" parent="TextRegular.Black28">
+        <item name="android:textSize">@dimen/text_dim_20</item>
+    </style>
+
+    <style name="TextRegular.Black18" parent="TextRegular.Black28">
+        <item name="android:textSize">@dimen/text_dim_18</item>
+    </style>
+
+    <style name="TextRegular.Black12" parent="TextRegular.Black28">
+        <item name="android:textSize">@dimen/text_dim_12</item>
+    </style>
+
+    <style name="TextRegular.Black10" parent="TextRegular.Black28">
+        <item name="android:textSize">@dimen/text_dim_10</item>
+    </style>
+
+    <style name="TextRegular.Black16" parent="TextRegular.Black28">
+        <item name="android:textSize">@dimen/text_dim_16</item>
+    </style>
+
+    <!--
+    <style name="TextLigth.Yellow22" parent="Text.Bold">
+        <item name="android:textSize">@dimen/text_dim_22</item>
+        <item name="android:textColor">@color/yelow_frs</item>
+    </style>
+    -->
+
+    <style name="CustomProgressBarTheme">
+        <item name="android:windowLightStatusBar" tools:targetApi="m">false</item>
+        <item name="android:windowBackground">@android:color/transparent</item>
+    </style>
+
+    <!-- Buttons Style -->
+    <style name="ReconoSerID.Button" parent="Base.TextAppearance.AppCompat.Button">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:textColor">@color/colorWhite</item>
+        <item name="android:background">@drawable/background_button_round_blue</item>
+        <item name="android:gravity">center</item>
+        <item name="android:textAllCaps">true</item>
+        <item name="android:fontFamily">@font/brown_regular</item>
+        <item name="android:textSize">@dimen/text_dim_16</item>
+    </style>
+
+    <style name="ReconoSerID.Button.Normal" parent="ReconoSerID.Button">
+        <item name="android:layout_height">@dimen/button_height</item>
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_marginBottom">@dimen/margin_14</item>
+        <item name="android:layout_marginStart">@dimen/margin_14</item>
+        <item name="android:layout_marginEnd">@dimen/margin_14</item>
+        <item name="elevation">0dp</item>
+    </style>
+
+    <style name="ReconoSerID.Button.Sisec" parent="ReconoSerID.Button">
+        <item name="android:layout_height">@dimen/button_height</item>
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_marginBottom">@dimen/margin_14</item>
+        <item name="android:layout_marginStart">@dimen/margin_14</item>
+        <item name="android:layout_marginEnd">@dimen/margin_14</item>
+        <item name="android:textColor">@color/text_button_color</item>
+        <item name="background">@drawable/background_button_enabled</item>
+        <item name="elevation">0dp</item>
+    </style>
+
+    <style name="ReconoSerID.Button.Black" parent="ReconoSerID.Button.Normal">
+        <item name="android:background">@drawable/background_button_round_black</item>
+    </style>
+
+    <style name="ReconoSerID.Button.Yellow" parent="ReconoSerID.Button.Normal">
+        <item name="android:background">@drawable/background_button_round_yellow</item>
+        <item name="android:textColor">@color/colorBlack</item>
+    </style>
+
+    <style name="ReconoSerID.Button.Blue" parent="ReconoSerID.Button.Normal">
+        <item name="android:background">@drawable/background_button_round_blue</item>
+        <item name="android:textColor">@color/colorWhite</item>
+    </style>
+
+    <!--
+    <style name="LabelNormal" parent="Text.Regular">
+        <item name="android:textSize">@dimen/text_dim_12</item>
+        <item name="android:textColor">@color/brown_grey</item>
+    </style>
+
+    <style name="InputNormal" parent="Text.Light">
+        <item name="android:textSize">@dimen/text_dim_18</item>
+        <item name="android:textColor">@color/colorBlack</item>
+        <item name="android:textColorHint">@color/brown_grey</item>
+        <item name="android:background">@drawable/selector_edit_text</item>
+        <item name="android:singleLine">true</item>
+    </style>
+
+    <style name="InputSisec" parent="Text.Light">
+        <item name="android:textSize">@dimen/text_dim_18</item>
+        <item name="android:textColor">@color/colorBlack</item>
+        <item name="android:textColorHint">@color/brown_grey</item>
+        <item name="android:background">@android:color/transparent</item>
+        <item name="android:singleLine">true</item>
+    </style>
+
+    -->
+
+    <style name="Toolbar.TitleText" parent="TextAppearance.Widget.AppCompat.Toolbar.Title">
+        <item name="android:textSize">28sp</item>
+        <item name="android:layout_marginStart">@dimen/margin_14</item>
+        <item name="android:fontFamily">@font/brown_regular</item>
+        <item name="android:gravity">bottom</item>
+    </style>
+
+    <style name="Toolbar.TitleText.White" parent="Toolbar.TitleText">
+        <item name="android:textColor">@color/colorWhite</item>
+    </style>
+
+    <style name="Toolbar.TitleText.LightBlack" parent="Toolbar.TitleText">
+        <item name="android:textColor">@color/lightBlack</item>
+    </style>
+
+    <style name="Toolbar.TitleTextCollApp" parent="TextAppearance.Widget.AppCompat.Toolbar.Title">
+        <item name="android:fontFamily">@font/brown_regular</item>
+        <item name="android:gravity">center</item>
+        <item name="android:textSize">@dimen/text_dim_18</item>
+        <item name="android:layout_marginStart">0dp</item>
+    </style>
+
+    <style name="Toolbar.TitleTextCollApp.White" parent="Toolbar.TitleTextCollApp">
+        <item name="android:textColor">@color/colorWhite</item>
+    </style>
+
+    <style name="Toolbar.TitleTextCollApp.LightBlack" parent="Toolbar.TitleTextCollApp">
+        <item name="android:textColor">@color/lightBlack</item>
+    </style>
+
+    <style name="Widget.BottomNavigationView" parent="Widget.Design.BottomNavigationView">
+        <item name="fontFamily">@font/brown_regular</item>
+        <item name="android:textSize">@dimen/text_dim_12</item>
+        <item name="background">@color/colorWhite</item>
+        <item name="itemIconTint">@color/selector_item</item>
+        <item name="itemTextColor">@color/selector_item</item>
+    </style>
+
+    <style name="ReconoSerID.Button.Magenta" parent="ReconoSerID.Button.Normal">
+        <item name="android:background">@drawable/background_button_round_red</item>
+    </style>
+
+    <style name="Text.MonserratBold" parent="TextView">  <!--regular-->
+        <item name="android:fontFamily">@font/montserrat_bold</item>
+    </style>
+
+    <style name="Text.MonserratMedium" parent="TextView">  <!--regular-->
+        <item name="android:fontFamily">@font/montserrat_medium</item>
+    </style>
+
+    <style name="Text.MonserratRegular" parent="TextView">  <!--regular-->
+        <item name="android:fontFamily">@font/montserrat_regular</item>
+    </style>
+
+
+    <style name="TextMonserratBold.White30" parent="Text.MonserratBold">
+        <item name="android:textSize">@dimen/text_dim_30</item>
+        <item name="android:textColor">@color/colorWhite</item>
+    </style>
+
+    <style name="TextMonserratBold.White16" parent="Text.MonserratBold">
+        <item name="android:textSize">@dimen/text_dim_16</item>
+        <item name="android:textColor">@color/colorWhite</item>
+    </style>
+
+    <style name="TextMonserratMedium.White14" parent="Text.MonserratBold">
+        <item name="android:textSize">@dimen/text_dim_14</item>
+        <item name="android:textColor">@color/colorWhite</item>
+    </style>
+
+    <style name="TextMonserratRegular.White24" parent="Text.MonserratRegular">
+        <item name="android:textSize">@dimen/text_dim_24</item>
+        <item name="android:textColor">@color/colorWhite</item>
+    </style>
+
+    <style name="TextMonserratRegular.White16" parent="Text.MonserratRegular">
+        <item name="android:textSize">@dimen/text_dim_16</item>
+        <item name="android:textColor">@color/colorWhite</item>
+    </style>
+
+    <style name="NavigationDrawerStyle">
+        <item name="android:textSize">@dimen/text_dim_16</item><!-- text size in menu-->
+        <item name="android:fontFamily">@font/montserrat_regular</item> <!-- text font-->
+    </style>
+
+</resources>

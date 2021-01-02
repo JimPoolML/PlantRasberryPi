@@ -1,0 +1,30 @@
+<resources>
+    <string name="app_name">PlantRasberryPI</string>
+
+    <string name="my_project">Monitor Plant of RasberryPi</string>
+    <string name="example_dog">Ex: Akita</string>
+    <string name="empty_list">Empty List</string>
+    <string name="no_found">No Match found</string>
+
+    <string-array name="dog_list">
+        <item>Akita</item>
+        <item>Beagle</item>
+        <item>Boxer</item>
+        <item>Bulldog</item>
+        <item>Chihuahua</item>
+        <item>Chow</item>
+        <item>Dalmatian</item>
+        <item>Dingo</item>
+        <item>Doberman</item>
+        <item>Husky</item>
+        <item>Labrador</item>
+        <item>Pekinese</item>
+        <item>PitBul</item>
+        <item>Pug</item>
+        <item>Rottweiler</item>
+        <item>Spaniel</item>
+        <item>Vizsla</item>
+        <item>Whippet</item>
+    </string-array>
+
+</resources>
