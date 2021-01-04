@@ -3,7 +3,6 @@ package appjpm4everyone.plantrasberrypi.ui.main
 import android.database.Cursor
 import android.database.MatrixCursor
 import android.graphics.Color
-import android.hardware.SensorManager
 import android.os.Bundle
 import android.provider.BaseColumns
 import android.util.Log
@@ -18,9 +17,8 @@ import appjpm4everyone.plantrasberrypi.utils.app
 import appjpm4everyone.plantrasberrypi.utils.custom.CustomProgressBar
 import appjpm4everyone.plantrasberrypi.utils.getViewModel
 import com.github.mikephil.charting.charts.LineChart
-import com.github.mikephil.charting.components.Legend
+import com.github.mikephil.charting.components.Description
 import com.github.mikephil.charting.components.LimitLine
-import com.github.mikephil.charting.components.XAxis
 import com.github.mikephil.charting.components.YAxis
 import com.github.mikephil.charting.data.*
 import com.github.mikephil.charting.interfaces.datasets.IBarDataSet
@@ -49,7 +47,7 @@ class MainActivity : BaseActivity() {
     private var set : ILineDataSet? = null
     private var count : Int = 0
     private var yValues: ArrayList<Entry> = ArrayList()
-
+    private var pieValues: ArrayList<PieEntry> = ArrayList()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -152,8 +150,25 @@ class MainActivity : BaseActivity() {
         startPlot()
     }
 
-    private fun addEntry() {
+    private fun startPlot() {
+        Thread (Runnable {
+            while (true) {
+                plotData = true
+                try {
+                    Thread.sleep(1000)
+                    addEntryTemp()
+                    addEntryHum()
+                    Log.e("Main", "test")
+                }catch (e: InterruptedException){
+                    e.printStackTrace()
+                }
+            }
+        }).start()
+    }
 
+    private fun addEntryTemp() {
+
+        //Simulate de temperature sensor
         val random = (0..100).random()
         yValues.add(Entry(count.toFloat(), random.toFloat()))
 
@@ -187,24 +202,59 @@ class MainActivity : BaseActivity() {
 
     }
 
-    private fun startPlot() {
-       /*if(thread != null){
-           thread.interrupt()
-       }*/
+    private fun addEntryHum(){
+        binding.chartPie.setUsePercentValues(false)
+        binding.chartPie.description.text = "Relative Humidity"
+        binding.chartPie.setExtraOffsets(5f, 10f, 5f, 5f)
 
-        Thread (Runnable {
-            while (true) {
-                plotData = true
-                try {
-                    Thread.sleep(1000)
-                    addEntry()
-                    Log.e("Main", "test")
-                }catch (e: InterruptedException){
-                    e.printStackTrace()
-                }
-            }
-        }).start()
+        binding.chartPie.dragDecelerationFrictionCoef = 0.99f //When the pie chart rotation is enabled
+        binding.chartPie.isDrawHoleEnabled = true
+        binding.chartPie.isRotationEnabled = false
+
+        binding.chartPie.setHoleColor(Color.WHITE)
+        binding.chartPie.transparentCircleRadius = 60f
+        binding.chartPie
+        binding.chartPie.setDrawCenterText(true)
+        binding.chartPie.setDrawSliceText(false)
+
+        //Simulate de RH sensor
+        var random = (0..1000).random().toFloat()
+        pieValues = ArrayList()
+        pieValues.add(PieEntry((random/10), "RH"))
+        binding.chartPie.centerText = (random/10).toString()+"%"
+        binding.chartPie.setCenterTextSize(20f)
+        binding.chartPie.setCenterTextColor(Color.BLACK)
+        random = 1000 - random
+        pieValues.add(PieEntry((random/10), ""))
+
+        val description =  Description()
+        description.text = "Relative humidity"
+        description.textSize = 15f
+        binding.chartPie.description = description
+
+
+        var pieDataSet : PieDataSet = PieDataSet(pieValues, "")
+        pieDataSet.sliceSpace = 1f
+        pieDataSet.selectionShift = 5f
+
+        // add a lot of colors
+        val colors = ArrayList<Int>()
+        colors.add(Color.BLUE)
+        colors.add(Color.LTGRAY)
+        pieDataSet.colors = colors
+
+        //Add Data
+        var pieData: PieData = PieData(pieDataSet)
+        //0f equals to hide :)
+        pieData.setValueTextSize(0f)
+        pieData.setValueTextColor(Color.WHITE)
+
+        binding.chartPie.data = pieData
+        binding.chartPie.invalidate()
+
     }
+
+
 
     private fun createSet(): ILineDataSet? {
         var set: LineDataSet = LineDataSet(null, "Data set 1")

@@ -73,6 +73,17 @@
                     app:layout_constraintTop_toTopOf="parent"/>
 
 
+                <androidx.constraintlayout.widget.Guideline
+                    android:id="@+id/guideV50"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    app:layout_constraintGuide_percent="0.50"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"/>
+
 
                 <RelativeLayout
                     android:id="@+id/relativeChart"
@@ -94,8 +105,28 @@
 
                 </RelativeLayout>
 
+                <RelativeLayout
+                    android:id="@+id/relativePieChart"
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    android:paddingLeft="@dimen/dp_20"
+                    android:paddingRight="@dimen/dp_20"
+                    android:paddingBottom="@dimen/dp_20"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toEndOf="@id/guideV50"
+                    app:layout_constraintTop_toBottomOf="@+id/guideH50">
+
+                    <com.github.mikephil.charting.charts.PieChart
+                        android:id="@+id/chartPie"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent" />
+
+                </RelativeLayout>
+
 
                 <androidx.recyclerview.widget.RecyclerView
+                    android:visibility="gone"
                     android:id="@+id/rvDogs"
                     android:layout_width="0dp"
                     android:layout_height="0dp"
