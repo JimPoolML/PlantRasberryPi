@@ -124,6 +124,25 @@
 
                 </RelativeLayout>
 
+                <RelativeLayout
+                    android:id="@+id/relativeBarChart"
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    android:paddingLeft="@dimen/dp_20"
+                    android:paddingRight="@dimen/dp_20"
+                    android:paddingBottom="@dimen/dp_20"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toStartOf="@id/guideV50"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/guideH50">
+
+                    <com.github.mikephil.charting.charts.BarChart
+                        android:id="@+id/chartBar"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent" />
+
+                </RelativeLayout>
+
 
                 <androidx.recyclerview.widget.RecyclerView
                     android:visibility="gone"
