@@ -1,4 +1,4 @@
-package appjpm4everyone.plantrasberrypi.ui.server
+package appjpm4everyone.plantrasberrypi.ui.server.dogs
 
 import appjpm4everyone.data.dogsOut.DogsResponse
 import retrofit2.Call

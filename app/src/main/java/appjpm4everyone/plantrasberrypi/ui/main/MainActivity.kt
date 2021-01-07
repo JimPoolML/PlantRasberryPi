@@ -9,6 +9,7 @@ import androidx.cursoradapter.widget.SimpleCursorAdapter
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
+import appjpm4everyone.data.rasberryPiOut.DataRasberryOut
 import appjpm4everyone.plantrasberrypi.R
 import appjpm4everyone.plantrasberrypi.databinding.ActivityMainBinding
 import appjpm4everyone.plantrasberrypi.ui.base.BaseActivity
@@ -48,6 +49,9 @@ class MainActivity : BaseActivity() {
     private var pieValues: ArrayList<PieEntry> = ArrayList()
     private var barValues: ArrayList<BarEntry> = ArrayList()
 
+    //Rasberry values
+    private lateinit var dataRasberryOut: DataRasberryOut
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -63,8 +67,6 @@ class MainActivity : BaseActivity() {
     private fun initUI() {
         binding.searchBreed.clearFocus()
         initChar()
-
-
 
         list = resources.getStringArray(R.array.dog_list).toList()
 
@@ -128,7 +130,6 @@ class MainActivity : BaseActivity() {
         binding.chart.description.text = "Real time temperature Data"
         binding.chart.setBackgroundColor(Color.WHITE)
 
-
         var upperLimit : LimitLine = LimitLine(60f, "Danger")
         upperLimit.lineWidth = 4f
         upperLimit.enableDashedLine(10f,10f, 0f)
@@ -153,8 +154,6 @@ class MainActivity : BaseActivity() {
         xAxis.setDrawLimitLinesBehindData(true)
 
         startPlot()
-
-
     }
 
     private fun startPlot() {
@@ -163,9 +162,7 @@ class MainActivity : BaseActivity() {
                 plotData = true
                 try {
                     Thread.sleep(1000)
-                    addEntryTemp()
-                    addEntryHum()
-                    addEntryDistance()
+                    viewModel.getValuesRasberry("5000")
                 }catch (e: InterruptedException){
                     e.printStackTrace()
                 }
@@ -178,6 +175,9 @@ class MainActivity : BaseActivity() {
         //Simulate de temperature sensor
         val random = (0..100).random()
         yValues.add(Entry(count.toFloat(), random.toFloat()))
+
+        //Real
+        yValues.add(Entry(count.toFloat(), dataRasberryOut.params!!.temperatureSource.toFloat()))
 
         val set1: LineDataSet = LineDataSet(yValues, "Data set 1")
         set1.fillAlpha = 110
@@ -228,14 +228,21 @@ class MainActivity : BaseActivity() {
         binding.chartPie.setDrawSliceText(false)
 
         //Simulate de RH sensor
-        var random = (0..1000).random().toFloat()
+        /*var random = (0..1000).random().toFloat()
         pieValues = ArrayList()
         pieValues.add(PieEntry((random/10), "RH"))
-        binding.chartPie.centerText = (random/10).toString()+"%"
+        random = 1000 - random
+        pieValues.add(PieEntry((random/10), ""))*/
+
+        //Real RH sensor
+        pieValues = ArrayList()
+        pieValues.add(PieEntry(dataRasberryOut.params!!.humiditySource.toFloat(), "RH"))
+        val lessHum = 100 - dataRasberryOut.params!!.humiditySource.toFloat()
+        pieValues.add(PieEntry(lessHum, ""))
+
+        binding.chartPie.centerText = dataRasberryOut.params!!.humiditySource.toString()+"%"
         binding.chartPie.setCenterTextSize(20f)
         binding.chartPie.setCenterTextColor(Color.BLACK)
-        random = 1000 - random
-        pieValues.add(PieEntry((random/10), ""))
 
         val description =  Description()
         description.text = "Relative humidity"
@@ -249,7 +256,8 @@ class MainActivity : BaseActivity() {
 
         // add a lot of colors
         val colors = ArrayList<Int>()
-        if(random<=400f){
+        //if(random<=400f){
+        if(dataRasberryOut.params!!.humiditySource<=40){
             colors.add(Color.BLUE)
         }else{
             colors.add(Color.GREEN)
@@ -291,15 +299,16 @@ class MainActivity : BaseActivity() {
         axisRight.axisMaximum= 400f
 
         //Simulate de distance sensor
-        val random = (0..400).random().toFloat()
-        barValues = ArrayList()
-        barValues.add(BarEntry(5f, random))
+        //val random = (0..400).random().toFloat()
 
+        barValues = ArrayList()
+        barValues.add(BarEntry(5f, dataRasberryOut.params!!.distanceSource.toFloat()))
 
         val barDataSet: BarDataSet = BarDataSet(barValues, "Distance cm")
         // add a lot of colors
         val colors = ArrayList<Int>()
-        if(random<=120){
+        //if(random<=120){
+        if(dataRasberryOut.params!!.distanceSource<=120){
             colors.add(Color.RED)
         }else{
             colors.add(R.color.purple_toolbar)
@@ -318,6 +327,19 @@ class MainActivity : BaseActivity() {
 
     }
 
+    private fun clearCharData() {
+        binding.chart.data = null
+        binding.chart.invalidate()
+        binding.chartPie.data = null
+        binding.chartPie.invalidate()
+        binding.chartBar.data = null
+        binding.chartBar.invalidate()
+        count = 0
+        yValues.clear()
+        pieValues = ArrayList()
+        barValues = ArrayList()
+    }
+
     // You must implements your logic to get data using OrmLite
     private fun populateAdapter(query: String) {
         val c = MatrixCursor(arrayOf(BaseColumns._ID, "dogsFound"))
@@ -333,10 +355,22 @@ class MainActivity : BaseActivity() {
         if (uiModel is MainViewModel.UiModel.Loading) progressBar.show(this) else progressBar.hideProgress()
         when (uiModel) {
             is MainViewModel.UiModel.ShowDogsError -> showDogsResponseError(uiModel.errorStatus)
+            is MainViewModel.UiModel.ShowRasberryError -> showRasberryError(uiModel.errorException)
             is MainViewModel.UiModel.ShowEmptyList -> showDogsResponseError(getString(R.string.empty_list))
             is MainViewModel.UiModel.ShowDogList -> showDogsSuccess(uiModel.dogsList)
+            is MainViewModel.UiModel.ShowRasberryData -> showRasberrySuccess(uiModel.dataRasberryOut)
         }
         hideKeyboardFrom(this)
+    }
+
+
+    private fun showRasberrySuccess(dataRasberryOut: DataRasberryOut) {
+        //constructor
+        this.dataRasberryOut = dataRasberryOut
+        addEntryTemp()
+        addEntryHum()
+        addEntryDistance()
+        print(dataRasberryOut.toString())
     }
 
     //To easily test
@@ -358,4 +392,11 @@ class MainActivity : BaseActivity() {
         hideKeyboardFrom(this)
         showShortSnackError(this, errorStatus)
     }
+
+    private fun showRasberryError(errorException: String) {
+        clearCharData()
+        hideKeyboardFrom(this)
+        showShortSnackError(this, errorException)
+    }
+
 }

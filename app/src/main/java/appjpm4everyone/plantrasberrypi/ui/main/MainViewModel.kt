@@ -4,23 +4,32 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import appjpm4everyone.plantrasberrypi.utils.ScopedViewModel
 import appjpm4everyone.data.dogsOut.DogsResponse
+import appjpm4everyone.data.rasberryPiOut.DataRasberryOut
 import appjpm4everyone.usescases.dogs.UseCaseDogs
+import appjpm4everyone.usescases.rasberrypi.UseCaseRasberryPi
 import kotlinx.coroutines.launch
 import java.io.IOException
+import java.sql.SQLSyntaxErrorException
 
-class MainViewModel(private val useCaseDogs: UseCaseDogs) : ScopedViewModel(){
+class MainViewModel(
+    private val useCaseDogs: UseCaseDogs,
+    private val useCaseRasberryPi: UseCaseRasberryPi
+) : ScopedViewModel(){
 
     sealed class UiModel {
         object Loading : UiModel()
         class ShowDogsError(var errorStatus: String) : UiModel()
+        class ShowRasberryError(var errorException: String) : UiModel()
         object ShowEmptyList : UiModel()
         class ShowDogList(var dogsList: List<String>) : UiModel()
+        class ShowRasberryData(var dataRasberryOut: DataRasberryOut) : UiModel()
     }
 
     private val _model = MutableLiveData<UiModel>()
     val modelChooseBusiness: LiveData<UiModel> get() = _model
 
     private lateinit var responseDogs : DogsResponse
+    private lateinit var responseRasberryPi: DataRasberryOut
 
     fun searchDogByName(queryDogs: String) {
         //Show loading
@@ -52,6 +61,35 @@ class MainViewModel(private val useCaseDogs: UseCaseDogs) : ScopedViewModel(){
             }
             else -> {
                 _model.value = UiModel.ShowDogList(responseDogs.message)
+            }
+        }
+    }
+
+    fun getValuesRasberry(telemetry: String) {
+        //Show loading
+        onRequestRasberrry(telemetry)
+    }
+
+    //Coroutines
+    private fun onRequestRasberrry(telemetry: String) = launch{
+        try {
+            val response = useCaseRasberryPi.invoke(telemetry)
+            responseRasberryPi = response
+            verifyDataRasberry(responseRasberryPi)
+        } catch (e: IOException) {
+            e.printStackTrace()
+            _model.value = UiModel.ShowDogsError(e.message.orEmpty())
+        }
+    }
+
+    private fun verifyDataRasberry(responseRasberryPi: DataRasberryOut) {
+        when {
+            responseRasberryPi.method != "notifyUser" -> {
+                //Server error
+                _model.value = UiModel.ShowRasberryError(responseRasberryPi.method)
+            }
+            else -> {
+                _model.value = UiModel.ShowRasberryData(responseRasberryPi)
             }
         }
     }
