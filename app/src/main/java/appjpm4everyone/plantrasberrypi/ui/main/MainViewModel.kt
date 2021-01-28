@@ -9,12 +9,11 @@ import appjpm4everyone.usescases.dogs.UseCaseDogs
 import appjpm4everyone.usescases.rasberrypi.UseCaseRasberryPi
 import kotlinx.coroutines.launch
 import java.io.IOException
-import java.sql.SQLSyntaxErrorException
 
 class MainViewModel(
     private val useCaseDogs: UseCaseDogs,
     private val useCaseRasberryPi: UseCaseRasberryPi
-) : ScopedViewModel(){
+) : ScopedViewModel() {
 
     sealed class UiModel {
         object Loading : UiModel()
@@ -22,14 +21,19 @@ class MainViewModel(
         class ShowRasberryError(var errorException: String) : UiModel()
         object ShowEmptyList : UiModel()
         class ShowDogList(var dogsList: List<String>) : UiModel()
-        class ShowRasberryData(var dataRasberryOut: DataRasberryOut) : UiModel()
+        class ShowRasberryData(var dataRasberryOut: DataRasberryOut, var environmentState: Int) :
+            UiModel()
     }
 
     private val _model = MutableLiveData<UiModel>()
     val modelChooseBusiness: LiveData<UiModel> get() = _model
 
-    private lateinit var responseDogs : DogsResponse
+    private lateinit var responseDogs: DogsResponse
     private lateinit var responseRasberryPi: DataRasberryOut
+    private var environmentState: Int = 0
+    private var tempCounter: Int = 0
+    private var humCounter: Int = 0
+
 
     fun searchDogByName(queryDogs: String) {
         //Show loading
@@ -38,7 +42,7 @@ class MainViewModel(
     }
 
     //Coroutines
-    private fun onRequestDogs(queryDogs: String) = launch{
+    private fun onRequestDogs(queryDogs: String) = launch {
         try {
             val response = useCaseDogs.invoke(queryDogs)
             responseDogs = response
@@ -53,6 +57,9 @@ class MainViewModel(
         when {
             responseDogs.status != "success" -> {
                 //Server error
+                tempCounter = 0
+                humCounter = 0
+                environmentState = 0
                 _model.value = UiModel.ShowDogsError(responseDogs.status)
             }
             responseDogs.message.isNullOrEmpty() -> {
@@ -71,7 +78,7 @@ class MainViewModel(
     }
 
     //Coroutines
-    private fun onRequestRasberrry(telemetry: String) = launch{
+    private fun onRequestRasberrry(telemetry: String) = launch {
         try {
             val response = useCaseRasberryPi.invoke(telemetry)
             responseRasberryPi = response
@@ -89,9 +96,39 @@ class MainViewModel(
                 _model.value = UiModel.ShowRasberryError(responseRasberryPi.method)
             }
             else -> {
-                _model.value = UiModel.ShowRasberryData(responseRasberryPi)
+                setEnvironmentState(responseRasberryPi)
+                _model.value = UiModel.ShowRasberryData(responseRasberryPi, environmentState)
             }
         }
     }
+
+    private fun setEnvironmentState(responseRasberryPi: DataRasberryOut) {
+        if (responseRasberryPi.params!!.temperature) {
+            //Add counter
+            tempCounter++
+        } else {
+            //Restart counter
+            tempCounter = 0;
+        }
+        if (responseRasberryPi.params!!.humidity) {
+            //Add counter
+            humCounter++
+        } else {
+            //Restart counter
+            humCounter = 0;
+        }
+
+        if (tempCounter >= 5 && humCounter >= 5) {
+            environmentState = 3
+        } else if (tempCounter >= 5 && humCounter < 5) {
+            environmentState = 2
+        } else if (tempCounter < 5 && humCounter >= 5) {
+            environmentState = 1
+        } else if (tempCounter < 5 && humCounter < 5) {
+            environmentState = 0
+        }
+
+    }
 }
+
 

@@ -1,5 +1,6 @@
 package appjpm4everyone.plantrasberrypi.ui.main
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.database.Cursor
 import android.database.MatrixCursor
@@ -9,6 +10,8 @@ import android.os.Bundle
 import android.os.VibrationEffect
 import android.os.Vibrator
 import android.provider.BaseColumns
+import android.speech.tts.TextToSpeech
+import android.util.Log
 import androidx.cursoradapter.widget.SimpleCursorAdapter
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.DividerItemDecoration
@@ -27,9 +30,11 @@ import com.github.mikephil.charting.components.YAxis
 import com.github.mikephil.charting.data.*
 import com.github.mikephil.charting.formatter.IndexAxisValueFormatter
 import com.github.mikephil.charting.interfaces.datasets.ILineDataSet
+import java.util.*
+import kotlin.collections.ArrayList
 
 
-class MainActivity : BaseActivity() {
+class MainActivity : BaseActivity(), TextToSpeech.OnInitListener {
 
     private lateinit var binding: ActivityMainBinding
     private lateinit var component: MainActivityComponent
@@ -65,6 +70,9 @@ class MainActivity : BaseActivity() {
     private val VIBRATE_PATTERN_LOW = intArrayOf(0, 50, 0, 50, 0, 50, 0, 50, 0, 50)
     private val VIBRATE_PATTERN_OFF = intArrayOf(0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
 
+    //Talkback text to speach
+    private var tts: TextToSpeech? = null
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -80,6 +88,9 @@ class MainActivity : BaseActivity() {
     private fun initUI() {
         binding.searchBreed.clearFocus()
         initChar()
+
+        //Init tts
+        tts = TextToSpeech(this, this)
 
         list = resources.getStringArray(R.array.dog_list).toList()
 
@@ -271,7 +282,7 @@ class MainActivity : BaseActivity() {
         // add a lot of colors
         val colors = ArrayList<Int>()
         //if(random<=400f){
-        if (dataRasberryOut.params!!.humiditySource <= 40) {
+        if (dataRasberryOut.params!!.humiditySource <= 60) {
             colors.add(Color.BLUE)
         } else {
             colors.add(Color.GREEN)
@@ -367,18 +378,41 @@ class MainActivity : BaseActivity() {
         when {
             vibration in 1.0..25.0 -> {
                 timeVibration = VIBRATE_PATTERN_LOW
+                //tts!!.speak("Bajo", TextToSpeech.QUEUE_FLUSH, null,"")
             }
             vibration in 25.1..50.0 -> {
                 timeVibration = VIBRATE_PATTERN_MEDIUM
+                //tts!!.speak("Medio", TextToSpeech.QUEUE_FLUSH, null,"")
             }
             vibration in 50.1..75.0 -> {
                 timeVibration = VIBRATE_PATTERN_HIGH
+                //tts!!.speak("Alto", TextToSpeech.QUEUE_FLUSH, null,"")
             }
             vibration > 75.0 -> {
                 timeVibration = VIBRATE_PATTERN_VERY_HIGH
+                //tts!!.speak("Muy Alto", TextToSpeech.QUEUE_FLUSH, null,"")
             }
         }
         return timeVibration
+    }
+
+    private fun textToSpeech(environmentState: Int) {
+
+        //is tts is speaking
+        if(!tts!!.isSpeaking) {
+
+            when (environmentState) {
+                3 -> {
+                    tts!!.speak("Temperatura y humedad altas", TextToSpeech.QUEUE_FLUSH, null, "")
+                }
+                2 -> {
+                    tts!!.speak("Temperatura alta", TextToSpeech.QUEUE_FLUSH, null, "")
+                }
+                1 -> {
+                    tts!!.speak("Humedad alta", TextToSpeech.QUEUE_FLUSH, null, "")
+                }
+            }
+        }
     }
 
     private fun clearCharData() {
@@ -412,22 +446,25 @@ class MainActivity : BaseActivity() {
             is MainViewModel.UiModel.ShowRasberryError -> showRasberryError(uiModel.errorException)
             is MainViewModel.UiModel.ShowEmptyList -> showDogsResponseError(getString(R.string.empty_list))
             is MainViewModel.UiModel.ShowDogList -> showDogsSuccess(uiModel.dogsList)
-            is MainViewModel.UiModel.ShowRasberryData -> showRasberrySuccess(uiModel.dataRasberryOut)
+            is MainViewModel.UiModel.ShowRasberryData -> showRasberrySuccess(uiModel.dataRasberryOut, uiModel.environmentState)
         }
         hideKeyboardFrom(this)
     }
 
 
-    private fun showRasberrySuccess(dataRasberryOut: DataRasberryOut) {
+    private fun showRasberrySuccess(
+        dataRasberryOut: DataRasberryOut,
+        environmentState: Int
+    ) {
         //constructor
         this.dataRasberryOut = dataRasberryOut
         addEntryTemp()
         addEntryHum()
         addEntryDistance()
         vibrationDistance()
+        textToSpeech(environmentState)
         print(dataRasberryOut.toString())
     }
-
 
     //To easily test
     private fun getArrayString(): Array<String?>? {
@@ -453,6 +490,30 @@ class MainActivity : BaseActivity() {
         clearCharData()
         hideKeyboardFrom(this)
         showShortSnackError(this, errorException)
+    }
+
+    @SuppressLint("LogNotTimber")
+    override fun onInit(status: Int) {
+        if (status == TextToSpeech.SUCCESS) {
+            // set US English as language for tts
+            val result = tts!!.setLanguage(Locale.getDefault())
+
+            if (result == TextToSpeech.LANG_MISSING_DATA || result == TextToSpeech.LANG_NOT_SUPPORTED) {
+                Log.e("TTS","The Language specified is not supported!")
+            }
+
+        } else {
+            Log.e("TTS", "Initilization Failed!")
+        }
+    }
+
+    public override fun onDestroy() {
+        // Shutdown TTS
+        if (tts != null) {
+            tts!!.stop()
+            tts!!.shutdown()
+        }
+        super.onDestroy()
     }
 
 }
