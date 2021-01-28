@@ -1,9 +1,13 @@
 package appjpm4everyone.plantrasberrypi.ui.main
 
+import android.content.Context
 import android.database.Cursor
 import android.database.MatrixCursor
 import android.graphics.Color
+import android.os.Build
 import android.os.Bundle
+import android.os.VibrationEffect
+import android.os.Vibrator
 import android.provider.BaseColumns
 import androidx.cursoradapter.widget.SimpleCursorAdapter
 import androidx.lifecycle.Observer
@@ -43,14 +47,23 @@ class MainActivity : BaseActivity() {
     private lateinit var mChar: LineChart
     private lateinit var thread: Thread
     private var plotData: Boolean = true
-    private var set : ILineDataSet? = null
-    private var count : Int = 0
+    private var set: ILineDataSet? = null
+    private var count: Int = 0
     private var yValues: MutableList<Entry> = mutableListOf()
     private var pieValues: ArrayList<PieEntry> = ArrayList()
     private var barValues: ArrayList<BarEntry> = ArrayList()
 
     //Rasberry values
     private lateinit var dataRasberryOut: DataRasberryOut
+
+    //Vibration
+    private val WAVE_TIME = longArrayOf(0, 150, 0, 150, 0, 150, 0, 150, 0, 150)
+
+    private val VIBRATE_PATTERN_VERY_HIGH = intArrayOf(0, 255, 0, 255, 0, 255, 0, 255, 0, 255)
+    private val VIBRATE_PATTERN_HIGH = intArrayOf(0, 200, 0, 200, 0, 200, 0, 255, 0, 200)
+    private val VIBRATE_PATTERN_MEDIUM = intArrayOf(0, 125, 0, 125, 0, 125, 0, 125, 0, 125)
+    private val VIBRATE_PATTERN_LOW = intArrayOf(0, 50, 0, 50, 0, 50, 0, 50, 0, 50)
+    private val VIBRATE_PATTERN_OFF = intArrayOf(0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -130,9 +143,9 @@ class MainActivity : BaseActivity() {
         binding.chart.description.text = "Real time temperature Data"
         binding.chart.setBackgroundColor(Color.WHITE)
 
-        var upperLimit : LimitLine = LimitLine(60f, "Danger")
+        var upperLimit: LimitLine = LimitLine(60f, "Danger")
         upperLimit.lineWidth = 4f
-        upperLimit.enableDashedLine(10f,10f, 0f)
+        upperLimit.enableDashedLine(10f, 10f, 0f)
         upperLimit.labelPosition = LimitLine.LimitLabelPosition.RIGHT_TOP
         upperLimit.textSize = 15f
 
@@ -157,13 +170,13 @@ class MainActivity : BaseActivity() {
     }
 
     private fun startPlot() {
-        Thread (Runnable {
+        Thread(Runnable {
             while (true) {
                 plotData = true
                 try {
                     Thread.sleep(1000)
                     viewModel.getValuesRasberry("5000")
-                }catch (e: InterruptedException){
+                } catch (e: InterruptedException) {
                     e.printStackTrace()
                 }
             }
@@ -193,31 +206,32 @@ class MainActivity : BaseActivity() {
         binding.chart.data = data
         binding.chart.invalidate()
 
-        if(count>19){
+        if (count > 19) {
             //Clear data
-            val auxValues : ArrayList<Entry> = ArrayList()
+            val auxValues: ArrayList<Entry> = ArrayList()
             yValues.reverse()
             for (i in 0..4) {
                 auxValues.add(Entry(i.toFloat(), yValues[i].y))
             }
-            count=5
+            count = 5
             yValues.clear()
-            for(i in auxValues.indices){
+            for (i in auxValues.indices) {
                 yValues.add(auxValues[i])
             }
             yValues = auxValues
-        }else{
+        } else {
             count += 1
         }
 
     }
 
-    private fun addEntryHum(){
+    private fun addEntryHum() {
         binding.chartPie.setUsePercentValues(false)
         binding.chartPie.description.text = "Relative Humidity"
         binding.chartPie.setExtraOffsets(5f, 10f, 5f, 5f)
 
-        binding.chartPie.dragDecelerationFrictionCoef = 0.99f //When the pie chart rotation is enabled
+        binding.chartPie.dragDecelerationFrictionCoef =
+            0.99f //When the pie chart rotation is enabled
         binding.chartPie.isDrawHoleEnabled = true
         binding.chartPie.isRotationEnabled = false
 
@@ -240,26 +254,26 @@ class MainActivity : BaseActivity() {
         val lessHum = 100 - dataRasberryOut.params!!.humiditySource.toFloat()
         pieValues.add(PieEntry(lessHum, ""))
 
-        binding.chartPie.centerText = dataRasberryOut.params!!.humiditySource.toString()+"%"
+        binding.chartPie.centerText = dataRasberryOut.params!!.humiditySource.toString() + "%"
         binding.chartPie.setCenterTextSize(20f)
         binding.chartPie.setCenterTextColor(Color.BLACK)
 
-        val description =  Description()
+        val description = Description()
         description.text = "Relative humidity"
         description.textSize = 15f
         binding.chartPie.description = description
 
 
-        val pieDataSet : PieDataSet = PieDataSet(pieValues, "")
+        val pieDataSet: PieDataSet = PieDataSet(pieValues, "")
         pieDataSet.sliceSpace = 1f
         pieDataSet.selectionShift = 5f
 
         // add a lot of colors
         val colors = ArrayList<Int>()
         //if(random<=400f){
-        if(dataRasberryOut.params!!.humiditySource<=40){
+        if (dataRasberryOut.params!!.humiditySource <= 40) {
             colors.add(Color.BLUE)
-        }else{
+        } else {
             colors.add(Color.GREEN)
         }
         colors.add(Color.LTGRAY)
@@ -275,7 +289,7 @@ class MainActivity : BaseActivity() {
         binding.chartPie.invalidate()
     }
 
-    private fun addEntryDistance(){
+    private fun addEntryDistance() {
         binding.chartBar.isDragXEnabled = true
         binding.chartBar.setScaleEnabled(false)
         binding.chartBar.description.text = "Distance cm Data"
@@ -291,12 +305,12 @@ class MainActivity : BaseActivity() {
         val axisLeft: YAxis = binding.chartBar.axisLeft
         axisLeft.granularity = 2f
         axisLeft.axisMinimum = 0f
-        axisLeft.axisMaximum= 400f
+        axisLeft.axisMaximum = 400f
 
         val axisRight: YAxis = binding.chartBar.axisRight
         axisRight.granularity = 2f
         axisRight.axisMinimum = 0f
-        axisRight.axisMaximum= 400f
+        axisRight.axisMaximum = 400f
 
         //Simulate de distance sensor
         //val random = (0..400).random().toFloat()
@@ -308,9 +322,9 @@ class MainActivity : BaseActivity() {
         // add a lot of colors
         val colors = ArrayList<Int>()
         //if(random<=120){
-        if(dataRasberryOut.params!!.distanceSource<=120){
+        if (dataRasberryOut.params!!.distanceSource <= 120) {
             colors.add(Color.RED)
-        }else{
+        } else {
             colors.add(R.color.purple_toolbar)
         }
         //for (c in ColorTemplate.COLORFUL_COLORS) colors.add(c)
@@ -325,6 +339,46 @@ class MainActivity : BaseActivity() {
         binding.chartBar.data = barData
         binding.chartBar.invalidate()
 
+    }
+
+    private fun vibrationDistance() {
+
+        val timeVibration = evaluateVibration(dataRasberryOut.params!!.vibration)
+        val v = (getSystemService(Context.VIBRATOR_SERVICE) as Vibrator)
+        // Avoid errors
+        // API 26 and above
+        var vibrationEffect: VibrationEffect? = null
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            vibrationEffect = VibrationEffect.createWaveform(
+                WAVE_TIME,
+                timeVibration,
+                -1)
+            v.vibrate(vibrationEffect)
+
+        } else {
+            // Below API 26
+            @Suppress("DEPRECATION")
+            v.vibrate(500)
+        }
+    }
+
+    private fun evaluateVibration(vibration: Double): IntArray {
+        var timeVibration: IntArray = VIBRATE_PATTERN_OFF
+        when {
+            vibration in 1.0..25.0 -> {
+                timeVibration = VIBRATE_PATTERN_LOW
+            }
+            vibration in 25.1..50.0 -> {
+                timeVibration = VIBRATE_PATTERN_MEDIUM
+            }
+            vibration in 50.1..75.0 -> {
+                timeVibration = VIBRATE_PATTERN_HIGH
+            }
+            vibration > 75.0 -> {
+                timeVibration = VIBRATE_PATTERN_VERY_HIGH
+            }
+        }
+        return timeVibration
     }
 
     private fun clearCharData() {
@@ -370,8 +424,10 @@ class MainActivity : BaseActivity() {
         addEntryTemp()
         addEntryHum()
         addEntryDistance()
+        vibrationDistance()
         print(dataRasberryOut.toString())
     }
+
 
     //To easily test
     private fun getArrayString(): Array<String?>? {
