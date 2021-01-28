@@ -103,7 +103,8 @@ class MainViewModel(
     }
 
     private fun setEnvironmentState(responseRasberryPi: DataRasberryOut) {
-        if (responseRasberryPi.params!!.temperature) {
+        //if (responseRasberryPi.params!!.temperature) {
+        if (responseRasberryPi.params!!.temperatureSource >25) {
             //Add counter
             tempCounter++
         } else {

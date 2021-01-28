@@ -1,7 +1,7 @@
 <resources>
     <string name="app_name">PlantRasberryPI</string>
 
-    <string name="my_project">Monitor Plant of RasberryPi</string>
+    <string name="my_project">Monitor of RasberryPi</string>
     <string name="example_dog">Ex: Akita</string>
     <string name="empty_list">Empty List</string>
     <string name="no_found">No Match found</string>

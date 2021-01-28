@@ -197,11 +197,12 @@ class MainActivity : BaseActivity(), TextToSpeech.OnInitListener {
     private fun addEntryTemp() {
 
         //Simulate de temperature sensor
-        val random = (0..100).random()
-        yValues.add(Entry(count.toFloat(), random.toFloat()))
+        /*val random = (0..100).random()
+        yValues.add(Entry(count.toFloat(), random.toFloat()))*/
 
         //Real
-        yValues.add(Entry(count.toFloat(), dataRasberryOut.params!!.temperatureSource.toFloat()))
+        val temperatureFormat :Double = Math.round(dataRasberryOut.params!!.temperatureSource * 100.0) / 100.0
+        yValues.add(Entry(count.toFloat(), temperatureFormat.toFloat()))
 
         val set1: LineDataSet = LineDataSet(yValues, "Data set 1")
         set1.fillAlpha = 110
@@ -261,11 +262,16 @@ class MainActivity : BaseActivity(), TextToSpeech.OnInitListener {
 
         //Real RH sensor
         pieValues = ArrayList()
-        pieValues.add(PieEntry(dataRasberryOut.params!!.humiditySource.toFloat(), "RH"))
+
+        //val humidityFormat = String.format("%.2f", dataRasberryOut.params!!.humiditySource)
+        val humidityFormat :Double = Math.round(dataRasberryOut.params!!.humiditySource * 100.0) / 100.0
+        Log.e("Humedad", humidityFormat.toString())
+        print(humidityFormat)
+        pieValues.add(PieEntry(humidityFormat.toFloat(), "RH"))
         val lessHum = 100 - dataRasberryOut.params!!.humiditySource.toFloat()
         pieValues.add(PieEntry(lessHum, ""))
 
-        binding.chartPie.centerText = dataRasberryOut.params!!.humiditySource.toString() + "%"
+        binding.chartPie.centerText = "$humidityFormat%"
         binding.chartPie.setCenterTextSize(20f)
         binding.chartPie.setCenterTextColor(Color.BLACK)
 
@@ -282,7 +288,7 @@ class MainActivity : BaseActivity(), TextToSpeech.OnInitListener {
         // add a lot of colors
         val colors = ArrayList<Int>()
         //if(random<=400f){
-        if (dataRasberryOut.params!!.humiditySource <= 60) {
+        if (dataRasberryOut.params!!.humiditySource <= 80) {
             colors.add(Color.BLUE)
         } else {
             colors.add(Color.GREEN)
@@ -327,6 +333,9 @@ class MainActivity : BaseActivity(), TextToSpeech.OnInitListener {
         //val random = (0..400).random().toFloat()
 
         barValues = ArrayList()
+        if(dataRasberryOut.params!!.distanceSource>400){
+            dataRasberryOut.params!!.distanceSource = 400.0
+        }
         barValues.add(BarEntry(5f, dataRasberryOut.params!!.distanceSource.toFloat()))
 
         val barDataSet: BarDataSet = BarDataSet(barValues, "Distance cm")
