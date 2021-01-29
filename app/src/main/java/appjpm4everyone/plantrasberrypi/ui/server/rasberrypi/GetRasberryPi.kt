@@ -11,5 +11,4 @@ interface GetRasberryPi {
     @Headers("Accept: application/json", "Content-Type: application/json")
     @GET
     fun getRasberryMagnitudes(@Url tem:String): Call<DataRasberryOut>
-
 }

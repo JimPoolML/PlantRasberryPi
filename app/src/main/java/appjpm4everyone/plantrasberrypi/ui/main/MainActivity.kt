@@ -154,7 +154,7 @@ class MainActivity : BaseActivity(), TextToSpeech.OnInitListener {
         binding.chart.description.text = "Real time temperature Data"
         binding.chart.setBackgroundColor(Color.WHITE)
 
-        var upperLimit: LimitLine = LimitLine(60f, "Danger")
+        var upperLimit: LimitLine = LimitLine(50f, "Danger")
         upperLimit.lineWidth = 4f
         upperLimit.enableDashedLine(10f, 10f, 0f)
         upperLimit.labelPosition = LimitLine.LimitLabelPosition.RIGHT_TOP
@@ -186,7 +186,7 @@ class MainActivity : BaseActivity(), TextToSpeech.OnInitListener {
                 plotData = true
                 try {
                     Thread.sleep(1000)
-                    viewModel.getValuesRasberry("5000")
+                    viewModel.getValuesRasberry("1000")
                 } catch (e: InterruptedException) {
                     e.printStackTrace()
                 }
